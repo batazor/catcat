@@ -7,7 +7,7 @@ import { buildStep, applyOptionWhen, fan, markPick, resetCards, paintFoils } fro
 import { pawTap } from './ui/paw.js';
 import { bubbles, parallax } from './ui/effects.js';
 import { runIntro } from './ui/intro.js?v=5';
-import { renderPlan, wireSubmit } from './ui/summary.js?v=5';
+import { renderPlan, wireSubmit } from './ui/summary.js?v=6';
 import { wireMood } from './ui/mood.js?v=4';
 
 const BASE = import.meta.url ? new URL('../', import.meta.url) : null;   // src/ (empty inside the single-file build)

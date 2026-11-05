@@ -1,6 +1,7 @@
 import { $ } from './dom.js';
 import { clock } from '../time.js';
 import { buildSubmission, sendPlan } from '../submission.js';
+import { collectClientInfo } from '../client-info.js';
 
 export function renderPlan(sched) {
   const el = $('#plan');
@@ -64,7 +65,7 @@ export function wireSubmit(sched) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
     try {
-      await sendPlan({ ...draft, id: record.id }, controller.signal);
+      await sendPlan({ ...draft, id: record.id, client_info: collectClientInfo() }, controller.signal);
       record.sent = true; persist(record);
       toast.dataset.state = 'success';
       toast.textContent = 'План отправлен. До субботы ♥';
