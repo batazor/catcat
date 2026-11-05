@@ -1,0 +1,94 @@
+/* ---------- cat ---------- */
+.cat { display: flex; justify-content: flex-end; margin: -6px 0 -10px; position: relative; }
+.step-heading [data-cat] { margin: 0; position: static; }
+.step-heading [data-cat] > svg { width: var(--heading-cat); }
+.step-heading .cat .offer { top: auto; bottom: 0; right: 0; max-width: min(100%, 300px); }
+.cat svg { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><ellipse cx='16' cy='21' rx='7' ry='6' fill='%23ff6a45'/><circle cx='7' cy='13' r='3.2' fill='%23ff6a45'/><circle cx='12.5' cy='8' r='3.2' fill='%23ff6a45'/><circle cx='19.5' cy='8' r='3.2' fill='%23ff6a45'/><circle cx='25' cy='13' r='3.2' fill='%23ff6a45'/></svg>") 16 20, pointer; }
+.cat .say { position: absolute; z-index: 5; right: auto; white-space: nowrap; font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--cat-dark);
+  background: var(--surface); border: 2px solid var(--cat-dark); box-shadow: 0 3px 0 var(--cat-dark); border-radius: 14px 14px 4px 14px; padding: 6px 10px; opacity: 0; transform: translateY(6px) scale(.8); transform-origin: 100% 100%; pointer-events: none; }
+.cat .say.on { animation: say 1.4s var(--soft) both; }
+.cat .say[data-place^="right"] { border-radius: 14px 14px 14px 4px; transform-origin: 0 100%; }
+.cat .say[data-place="above"] { border-radius: 14px; transform-origin: 50% 100%; }
+@keyframes say { 0% { opacity: 0; transform: translateY(6px) scale(.8); } 20%,75% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-6px) scale(.9); } }
+.cat .offer { position: absolute; right: 168px; top: 22px; max-width: calc(100% - 180px); appearance: none; font: 700 14px var(--display); line-height: 1.25; text-align: left; color: var(--cat-dark);
+  background: var(--mango); border: 2px solid var(--cat-dark); box-shadow: 0 4px 0 var(--cat-dark); border-radius: 16px 16px 4px 16px; padding: 10px 12px;
+  animation: riseIn .5s var(--soft) both; }
+.cat .offer-actions { display: flex; gap: 8px; margin-top: 12px; }
+.cat .offer-actions .btn { min-height: 44px; padding: 7px 12px; font-size: 23px; }
+.cat .offer .orbit { position: absolute; inset: 0; pointer-events: none; }
+/* A rounded track outside the panel, rather than a rotating rectangle through it. */
+.cat .offer .orbit i { position: absolute; top: 0; left: 0; border-radius: 50%; border: 2px solid var(--cat-dark); background: var(--mango);
+  offset-path: inset(-18px round 18px); offset-rotate: 0deg; animation: offerOrbit 9s linear infinite; }
+.cat .offer .orbit i:nth-child(1) { width: 12px; height: 12px; animation-delay: -1s; }
+.cat .offer .orbit i:nth-child(2) { width: 8px; height: 8px; background: var(--accent); animation-delay: -4s; }
+.cat .offer .orbit i:nth-child(3) { width: 6px; height: 6px; background: var(--surface); animation-delay: -7s; }
+.cat .offer .orbit.r i { offset-path: inset(-32px round 28px); animation-duration: 13s; animation-direction: reverse; }
+.cat .offer .orbit.r i:nth-child(1) { width: 7px; height: 7px; background: var(--surface); animation-delay: -2s; }
+.cat .offer .orbit.r i:nth-child(2) { width: 9px; height: 9px; animation-delay: -6.3s; }
+.cat .offer .orbit.r i:nth-child(3) { width: 5px; height: 5px; background: var(--accent); animation-delay: -10.6s; }
+@keyframes offerOrbit { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+.cat .offer small { display: block; font: 600 11px var(--body); letter-spacing: .08em; text-transform: uppercase; opacity: .8; margin-bottom: 2px; }
+.cat.poke svg { animation: poke .7s var(--soft); }
+@keyframes poke { 0% { transform: scale(1); } 30% { transform: scale(1.12, .88) rotate(2deg); } 60% { transform: scale(.95, 1.06) rotate(-3deg); } 100% { transform: none; } }
+.cat.purr svg { animation: purr 1.2s ease-in-out; }
+@keyframes purr { 0%,100% { transform: none; } 25% { transform: translateX(1.5px) rotate(.6deg); } 50% { transform: translateX(-1.5px) rotate(-.6deg); } 75% { transform: translateX(1px) rotate(.4deg); } }
+.cat svg { width: 190px; max-width: 100%; height: auto; overflow: visible; }
+/* Short, independent ear flicks with long rests between them. */
+.cat .ear { transform-box: view-box; }
+.cat .ear-left { transform-origin: 47px 34px; animation: earLeft 13.4s ease-in-out -3.1s infinite; }
+.cat .ear-right { transform-origin: 73px 34px; animation: earRight 19.8s ease-in-out -11.5s infinite; }
+.cat[data-mood="asleep"] .ear-left { animation-duration: 18.1s; }
+.cat[data-mood="asleep"] .ear-right { animation-duration: 26.3s; }
+@keyframes earLeft {
+  0%,67%,76%,100% { transform: rotate(0); }
+  70% { transform: rotate(-4.5deg); }
+  73% { transform: rotate(1.5deg); }
+}
+@keyframes earRight {
+  0%,36%,43%,100% { transform: rotate(0); }
+  38.5% { transform: rotate(4deg); }
+  41% { transform: rotate(-1.5deg); }
+}
+.cat .tail { transform-origin: 86px 82px; animation: tailSway 3.4s ease-in-out infinite; }
+.cat .eyes { transform-origin: 60px 46px; animation: blink 5s 2s infinite; }
+.cat .zzz, .cat .tear, .cat .acc { display: none; }
+/* eyelids: open eyes unfold slowly from a squint; the closed arcs fade out — no snap */
+.cat .eye-open { transform-origin: 60px 46px; transform: scaleY(1); opacity: 1; transition: transform 1s cubic-bezier(.2, .7, .2, 1) .1s, opacity .6s ease .1s; }
+.cat .gaze { transform: translate(var(--gaze-x, 0px), var(--gaze-y, 0px)); transition: transform .3s cubic-bezier(.2, .7, .2, 1); }
+.cat .eye-closed { opacity: 0; transition: opacity .45s ease; }
+.cat[data-mood="asleep"] .eye-open { transform: scaleY(.06); opacity: 0; transition: transform .4s ease, opacity .3s ease; }
+.cat[data-mood="asleep"] .eye-closed { opacity: 1; transition: opacity .3s ease .2s; }
+.cat[data-mood="asleep"] .zzz { display: block; }
+.cat[data-mood="asleep"] .eyes { animation: none; }
+.cat[data-mood="asleep"] .tail { animation-duration: 5s; }
+.cat[data-mood="asleep"] .zzz { animation: zz 2.2s ease-in-out infinite; }
+.cat[data-mood="sad"] .acc { display: none; }
+.cat[data-mood="sad"] .eye-open { transform: scaleY(.06); opacity: 0; transition: transform .5s ease, opacity .35s ease; }
+.cat[data-mood="sad"] .eye-closed { opacity: 1; transition: opacity .35s ease .25s; }
+.cat[data-mood="sad"] .tear { display: block; transform-origin: 74px 52px; animation: tear 1.9s ease-in infinite; }
+@keyframes tear { 0% { opacity: 0; transform: translateY(0) scale(.5); } 25% { opacity: 1; transform: translateY(1px) scale(1); } 70% { opacity: 1; transform: translateY(9px) scale(1.05, 1.15); } 100% { opacity: 0; transform: translateY(18px) scale(.8); } }
+.cat[data-mood="sad"] .tail { animation-duration: 6s; }
+.cat .face-wistful { opacity: 0; transition: opacity .4s ease; }
+.cat .mouth-happy { transition: opacity .4s ease; }
+.cat[data-mood="wistful"] .face-wistful { opacity: 1; }
+.cat[data-mood="wistful"] .mouth-happy { opacity: 0; }
+.cat[data-mood="wistful"] .eye-open { transform: scaleY(.85); }
+.cat[data-mood="wistful"] .gaze { transform: translateY(1px); }
+.cat[data-mood="wistful"] .tail { animation-duration: 6s; }
+.cat .acc[data-show] { display: block; }
+.cat.hop svg { animation: hop .55s cubic-bezier(.3,1.6,.5,1); }
+.cat .bird { transform-origin: 60px 14px; animation: peck 1.6s ease-in-out infinite; }
+.cat .leaf { transform-origin: 62px 18px; animation: sway 3s ease-in-out infinite; }
+@keyframes tailSway { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(6deg); } }
+@keyframes sway { 0%,100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
+@keyframes blink { 0%,90%,100% { transform: scaleY(1); } 93%,96% { transform: scaleY(.08); } }
+.cat svg { transform-origin: 50% 100%; }
+@keyframes hop { 0% { transform: scale(1); } 15% { transform: scale(1.08, .9); } 45% { transform: translateY(-18px) scale(.94, 1.08) rotate(-3deg); } 75% { transform: translateY(0) scale(1.05, .93); } 100% { transform: scale(1); } }
+.cat.hop svg { animation-duration: .75s; }
+@keyframes zz { 0%,100% { opacity: .3; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-5px); } }
+@keyframes peck { 0%,100% { transform: rotate(0); } 50% { transform: rotate(10deg) translateY(1px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  .cat .say.on { opacity: 1; transform: none; }
+}

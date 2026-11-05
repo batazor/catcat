@@ -1,0 +1,20 @@
+/* ---------- summary ---------- */
+.plan { list-style: none; margin: 0; padding: 18px; border-radius: 22px; background: var(--surface); border: 2.5px solid var(--cat-dark); box-shadow: 0 6px 0 var(--cat-dark); }
+.plan li { display: grid; grid-template-columns: 58px 1fr; gap: 12px; padding-block: 12px; border-top: 1px solid var(--line); align-items: baseline; }
+.plan li:first-child { border-top: 0; padding-top: 0; }
+.plan time, .plan .dash { font-family: var(--display); font-size: 14px; font-weight: 500; color: var(--accent); font-variant-numeric: tabular-nums; }
+.plan .what { font-weight: 700; }
+.plan li.destination { grid-template-columns: 1fr; color: var(--cat-dark); }
+.plan .sub { color: var(--muted); font-size: 13px; }
+.plan li.skip .what { text-decoration: line-through; color: var(--muted); }
+.plan li.skip .sub { color: var(--mango); font-weight: 700; }
+.plan li.total { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); }
+.note { font-size: 13px; color: var(--muted); margin: 0; }
+.toast { font-size: 13px; color: var(--mango); font-weight: 700; min-height: 1.2em; margin: 0; }
+.bubbles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 4; }
+.bubbles i { position: absolute; bottom: -8vh; left: var(--x); width: var(--s); height: var(--s); border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.9), var(--c) 55%, transparent 100%); opacity: 0; filter: blur(.4px);
+  animation: rise var(--d) var(--ease) var(--delay) both; }
+@keyframes rise { 0% { opacity: 0; transform: translateY(0) scale(.6); } 15% { opacity: .85; } 100% { opacity: 0; transform: translateY(-110vh) translateX(var(--sway)) scale(1.1); } }
+.toast[data-state="success"] { color: var(--muted); }
+.toast[data-state="error"] { color: var(--accent); }

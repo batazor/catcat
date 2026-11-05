@@ -1,0 +1,15 @@
+/* ---------- nav ---------- */
+.nav { display: flex; gap: 10px; margin-top: auto; padding-top: 22px; }
+#step-time .nav { margin-top: clamp(24px, 5vh, 48px); padding-top: 0; }
+/* sticker buttons: flat fill, ink outline, hard drop shadow that the button sinks into on press */
+.btn {
+  appearance: none; border: 2px solid var(--cat-dark); border-radius: 999px; padding: 10px 20px; min-width: 0; min-height: 52px; font: inherit; font-weight: 700; cursor: pointer; flex: 1;
+  background: var(--cat); color: var(--cat-dark); font-family: 'Caveat', cursive; font-size: clamp(24px, 6vw, 28px); line-height: 1; letter-spacing: 0;
+  box-shadow: 0 4px 0 var(--cat-dark), inset 0 2px 0 rgba(255,255,255,.45);
+  transform: translateY(0); transition: transform .35s var(--soft), box-shadow .35s var(--soft), opacity .3s var(--ease), background .3s var(--ease);
+}
+.btn:not([disabled]):active { transform: translateY(4px); box-shadow: 0 0 0 var(--cat-dark), inset 0 2px 0 rgba(255,255,255,.45); transition-duration: .1s; }
+.btn.ghost { background: var(--surface); color: var(--cat-dark); flex: 0 0 auto; box-shadow: 0 4px 0 var(--cat-dark); }
+.btn.accent { background: var(--accent); color: var(--accent-ink); }
+.btn[disabled] { opacity: .4; cursor: default; box-shadow: 0 2px 0 var(--cat-dark); transform: translateY(2px); }
+.btn:focus-visible { outline: 3px solid var(--mango); outline-offset: 3px; }

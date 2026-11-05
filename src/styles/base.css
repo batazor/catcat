@@ -1,0 +1,53 @@
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--body); font-size: 16px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 32px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+/* fixed backdrop instead of background-attachment (iOS Safari ignores it) */
+.backdrop { position: fixed; inset: -24px; z-index: 0; pointer-events: none; will-change: transform;
+  background:
+    radial-gradient(60vw 45vh at 110% -5%, var(--glow-a) 0%, transparent 70%),
+    radial-gradient(70vw 50vh at -20% 100%, var(--glow-b) 0%, transparent 70%),
+    radial-gradient(40vw 30vh at 80% 60%, var(--glow-b) 0%, transparent 70%); }
+button, label, .cat { touch-action: manipulation; -webkit-touch-callout: none; }
+.card, .cat, .btn, .readout { -webkit-user-select: none; user-select: none; }
+
+main { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; }
+
+.eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin: 0; }
+
+.step { display: flex; flex-direction: column; gap: 18px; padding-block: 48px 0; flex: 1; animation: stepIn .55s var(--ease) both; }
+@keyframes stepIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+h1 {
+  width: fit-content; max-width: 100%;
+  font-family: var(--display); font-weight: 700; font-size: clamp(26px, 7vw, 34px); line-height: 1.1; margin: 0; text-wrap: balance; letter-spacing: -.01em;
+  background: linear-gradient(100deg, var(--fg) 40%, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.lead { color: var(--muted); margin: 0; max-width: 34ch; }
+.step-empty { margin: 0; max-width: 34ch; color: var(--cat-dark); font-family: 'Caveat', cursive; font-size: clamp(25px, 6vw, 29px); font-weight: 500; line-height: 1.4; }
+
+/* Step titles sit beside the cat, aligned along the bottom edge. */
+.step-heading {
+  --heading-cat: clamp(128px, 40vw, 190px);
+  position: relative; display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--heading-cat);
+  align-items: end; gap: 12px; margin-bottom: 20px;
+}
+.step-heading h1 { min-width: 0; }
+.step-heading:has(.offer) { padding-bottom: 172px; }
+
+@media (max-width: 360px) {
+  .step-heading { --heading-cat: 112px; }
+  .step-heading h1 { font-size: 24px; }
+}

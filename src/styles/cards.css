@@ -1,0 +1,170 @@
+/* ---------- cards (radio inputs) ---------- */
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+legend { padding: 0; margin-bottom: 12px; }
+/* the hand: cards fanned like a poker hand; --x/--y/--rot set per card by script, --dx/--dy/--drot while dragging */
+.pair { position: relative; height: 290px; margin: 4px 0 6px; perspective: 900px; }
+.card {
+  --dx: 0px; --dy: 0px; --drot: 0deg; --tf: translate(calc(-50% + var(--x, 0px) + var(--dx)), calc(var(--y, 0px) + var(--dy))) rotate(calc(var(--rot, 0deg) + var(--drot)));
+  position: absolute; left: 50%; top: 0; width: 206px; max-width: 60%; display: block; z-index: var(--z, 1);
+  transform: var(--tf); transform-origin: 50% 110%;
+  transition: transform .6s var(--soft), opacity .4s var(--ease), filter .4s var(--ease);
+  animation: dealIn .9s var(--ease) both; animation-delay: calc(.1s + var(--i, 0) * .16s);
+  cursor: grab;
+}
+.card { touch-action: pan-y; }
+.card.dragging { transition: none; cursor: grabbing; z-index: 20; }
+.card.chosen { --x: 0px; --y: -6px; --rot: 0deg; z-index: 10; }
+.pair.picked .card:not(.chosen) { opacity: .55; filter: saturate(.55); }
+.card.rejected { --y: 14px; opacity: .55; filter: saturate(.4); }
+@keyframes dealIn { from { opacity: 0; transform: translate(-50%, 54px) rotate(0deg) scale(.94); } to { opacity: 1; transform: var(--tf); } }
+/* swipe stamps */
+.card .face .stamp { position: absolute; top: 56px; font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: .08em; padding: 4px 10px; border: 3px solid var(--cat-dark); border-radius: 10px; opacity: 0; pointer-events: none; z-index: 3; color: var(--cat-dark); box-shadow: 0 3px 0 var(--cat-dark); }
+.card .stamp.yes { left: 16px; background: #7bd49f; transform: rotate(-14deg); opacity: var(--yes, 0); }
+.card .stamp.no { right: 16px; background: var(--accent); transform: rotate(14deg); opacity: var(--no, 0); }
+.card input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: inherit; }
+.card .face {
+  height: 256px; border-radius: 20px; padding: 14px 14px 12px;
+  display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+  border: 2.5px solid var(--cat-dark);
+  box-shadow: inset 0 0 0 5px var(--surface), inset 0 0 0 6.5px var(--cat-dark), 0 6px 0 var(--cat-dark);
+  color: var(--fg);
+  --map: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='260' viewBox='0 0 220 260' fill='none' stroke='%23000' stroke-opacity='.11' stroke-width='3' stroke-linecap='round'><path d='M-10 60c40-20 70 30 110 10s60-40 130-20'/><path d='M-10 150c50-30 90 20 140 0s50-40 100-30'/><path d='M40-10c-10 60 30 90 20 150s-30 80-10 130'/><path d='M150-10c20 60-20 110 0 170s30 70 10 110'/><path d='M-10 220c60-10 90 30 160 10'/><circle cx='88' cy='70' r='4' fill='%23000' fill-opacity='.14' stroke='none'/><circle cx='150' cy='170' r='4' fill='%23000' fill-opacity='.14' stroke='none'/></svg>");
+  background: var(--map) center / 220px 260px, radial-gradient(140% 120% at 10% 0%, var(--c1, var(--card-hi)) 0%, var(--c2, var(--card-lo)) 100%);
+  position: relative; overflow: hidden;
+  transition: background .4s var(--ease), box-shadow .45s var(--ease);
+}
+/* The shuffle changes depth only after the card has cleared the hand. */
+.card .face { transform-origin: 50% 85%; }
+.pair.picked .card.previewing { opacity: 1; filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  .card.previewing, .card:has(input:focus-visible) { z-index: 20; }
+  .card.previewing .face { translate: 0 -10px; }
+}
+@media (prefers-reduced-motion: reduce) and (hover: hover) and (pointer: fine) {
+  .card:hover { z-index: 20; }
+  .pair.picked .card:hover { opacity: 1; filter: none; }
+}
+.card .art { margin: 14px auto 0; }
+/* soft light under the finger */
+.card .face::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(150px circle at var(--px, 50%) var(--py, 50%), rgba(255,255,255,.55), rgba(255,255,255,0) 65%);
+  opacity: 0; transition: opacity .5s var(--ease); mix-blend-mode: soft-light;
+}
+.card.touch .face::before { opacity: 1; transition-duration: .2s; }
+/* sheen that drifts across the winner */
+.card .face::after {
+  content: ""; position: absolute; inset: -20% -60%; pointer-events: none; opacity: 0;
+  background: linear-gradient(105deg, rgba(255,255,255,0) 40%, rgba(255,255,255,.35) 50%, rgba(255,255,255,0) 60%);
+  transform: translateX(-60%);
+}
+.card input:checked + .face::after { animation: sheen 1.4s var(--ease) .2s both; }
+@keyframes sheen { 0% { opacity: 0; transform: translateX(-60%); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateX(60%); } }
+.card .art, .card .copy { position: relative; }
+.card .copy { display: block; min-width: 0; }
+.card input:focus-visible + .face { outline: 3px solid var(--mango); outline-offset: 3px; }
+.card .art { position: relative; width: 74px; height: 74px; display: grid; place-items: center; flex: 0 0 auto; }
+.card .art::before { content: ""; position: absolute; inset: 0; border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%; background: radial-gradient(circle at 35% 30%, var(--surface), var(--badge-color, var(--mango)) 80%); opacity: .7; transition: transform .6s var(--soft), opacity .4s; }
+.card .art svg { position: relative; width: 58px; height: 58px; stroke: var(--cat-dark); fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .6s var(--soft); }
+/* A tiny idle sway lives inside the SVG, separate from selection and card shuffling. */
+.card .icon-motion {
+  transform-box: fill-box; transform-origin: 50% 75%;
+  animation: iconSway 6.2s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -1.7s);
+}
+@keyframes iconSway {
+  0%,100% { transform: translateY(0) rotate(-1.2deg); }
+  50% { transform: translateY(-1.5px) rotate(1.2deg); }
+}
+.card:is([data-icon="home"], [data-icon="beach"], [data-icon="roof"], [data-icon="cliff"], [data-icon="bay"], [data-icon="leaf"], [data-icon="bird"]) .icon-motion { animation: none; }
+.card .parrot-sway {
+  transform-box: view-box; transform-origin: 33px 48px;
+  animation: parrotSway 5.8s ease-in-out -1.4s infinite;
+}
+@keyframes parrotSway {
+  0%,100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+.card .garden-leaf {
+  transform-box: view-box; transform-origin: var(--leaf-x) var(--leaf-y);
+  animation: gardenBreeze 5.4s ease-in-out var(--leaf-delay) infinite;
+}
+@keyframes gardenBreeze {
+  0%,100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
+}
+.card .palm-leaves {
+  transform-box: view-box; transform-origin: 49px 21px;
+  animation: palmBreeze 4.8s ease-in-out -1.2s infinite;
+}
+@keyframes palmBreeze {
+  0%,100% { transform: rotate(-3deg) skewX(-1deg); }
+  50% { transform: rotate(3deg) skewX(1deg); }
+}
+.card .sun-rays {
+  transform-box: view-box; transform-origin: var(--sun-x) var(--sun-y);
+  animation: sunRays 28s linear infinite;
+}
+.card .sun-rays-clip { clip-path: polygon(0 0, 100% 0, 100% 51.5625%, 0 51.5625%) view-box; }
+@keyframes sunRays { to { transform: rotate(360deg); } }
+.card .wine-glass {
+  transform-origin: 32px 38px;
+  animation: wineSway 5.6s ease-in-out -1s infinite;
+}
+@keyframes wineSway {
+  0%,100% { transform: rotate(0); }
+  35% { transform: rotate(-3deg); }
+  65% { transform: rotate(3deg); }
+}
+.card.touch .art svg { transform: scale(1.04); }
+.card.nofit :is(.icon-motion, .wine-glass, .palm-leaves, .sun-rays, .garden-leaf, .parrot-sway) { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .card :is(.icon-motion, .wine-glass, .palm-leaves, .sun-rays, .garden-leaf, .parrot-sway) { animation: none; }
+}
+.card .art::after { content: ""; position: absolute; inset: 0; border: 2px solid var(--cat-dark); border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%; pointer-events: none; }
+.card.touch .art::before { transform: scale(1.12) rotate(8deg); }
+.card .title { font-family: var(--display); font-weight: 700; font-size: 18px; line-height: 1.15; display: block; letter-spacing: -.01em; }
+.card .scratch { position: relative; display: block; margin-top: 6px; border-radius: 12px; overflow: hidden; min-height: 2.6em; }
+.card .desc { font-size: 13px; color: var(--muted); display: block; padding: 3px 4px; }
+.card .foil { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit; touch-action: none; z-index: 2; transition: opacity .7s var(--ease); cursor: grab; }
+.card .foil.done { opacity: 0; pointer-events: none; }
+.card.nofit .scratch { display: none; }
+.card .nofit-msg { display: none; margin-top: 8px; font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--mango); }
+.more { display: none; justify-content: center; }
+.more[data-show] { display: flex; }
+.more .btn { flex: 0 1 auto; background: var(--mango); color: var(--cat-dark); animation: riseIn .6s var(--soft) both; }
+
+.card input:checked + .face { color: var(--cat-dark); background: var(--map) center / 220px 260px, radial-gradient(120% 110% at 15% -10%, #ffd98a 0%, var(--mango) 55%, var(--accent) 130%); }
+.card input:checked + .face .art svg { stroke: var(--cat-dark); transform: scale(1.06) rotate(-3deg); }
+.card input:checked + .face .art::before { opacity: .35; transform: scale(1.25); background: radial-gradient(circle at 35% 30%, #fff, rgba(255,255,255,0) 70%); }
+.card input:checked + .face .desc { color: var(--cat-dark); }
+.card input:checked + .face { box-shadow: inset 0 0 0 5px rgba(255,255,255,.35), inset 0 0 0 6.5px var(--cat-dark), 0 6px 0 var(--cat-dark); animation: breathe 3.2s ease-in-out 1.2s infinite; }
+.card.dragging .face { box-shadow: inset 0 0 0 5px var(--surface), inset 0 0 0 6.5px var(--cat-dark), 0 2px 0 var(--cat-dark); }
+@keyframes breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.008); } }
+/* A card keeps its palette in every hand, regardless of its position. */
+.card[data-icon="home"] { --tint-hi: #ffe9cf; --tint-lo: #f7c99b; --night-hi: #483322; --night-lo: #382719; --badge-color: #e8ad47; }
+.card[data-icon="cliff"] { --tint-hi: #ffe4d6; --tint-lo: #f4b79d; --night-hi: #52342b; --night-lo: #3e251f; --badge-color: #ee916d; }
+.card[data-icon="dice"] { --tint-hi: #fde6ea; --tint-lo: #f0b9c6; --night-hi: #4e303a; --night-lo: #3c232e; --badge-color: #de91ac; }
+.card[data-icon="ball"] { --tint-hi: #f4f0d1; --tint-lo: #c9c393; --night-hi: #3e3c27; --night-lo: #2f2e1d; --badge-color: #aaa75b; }
+.card[data-icon="roof"] { --tint-hi: #ffe9de; --tint-lo: #e9b6ab; --night-hi: #52332e; --night-lo: #3e2626; --badge-color: #d98b78; }
+.card[data-icon="crane"] { --tint-hi: #f8e8ef; --tint-lo: #dcb8cd; --night-hi: #483340; --night-lo: #342530; --badge-color: #c894b5; }
+.card[data-icon="bird"] { --tint-hi: #f2f0cf; --tint-lo: #d4d599; --night-hi: #3f4029; --night-lo: #2c2f1e; --badge-color: #b1b464; }
+.card[data-icon="leaf"] { --tint-hi: #eaf0d3; --tint-lo: #bdc89c; --night-hi: #34402d; --night-lo: #263022; --badge-color: #a5b87b; }
+.card[data-icon="beach"] { --tint-hi: #fff2c7; --tint-lo: #efcd77; --night-hi: #4b3b22; --night-lo: #362a18; --badge-color: #edb94d; }
+.card[data-icon="cave"] { --tint-hi: #f6e8d7; --tint-lo: #d9b794; --night-hi: #48392d; --night-lo: #33271e; --badge-color: #c89b6f; }
+.card[data-icon="bay"] { --tint-hi: #ffebd6; --tint-lo: #eabc99; --night-hi: #503b2b; --night-lo: #39281d; --badge-color: #e29d70; }
+.card[data-icon="fire"] { --tint-hi: #ffe2cd; --tint-lo: #e9a17e; --night-hi: #543428; --night-lo: #3c241b; --badge-color: #e58a58; }
+.card { --c1: var(--tint-hi, var(--card-hi)); --c2: var(--tint-lo, var(--card-lo)); }
+:root[data-theme="dark"] .card { --c1: var(--night-hi, var(--card-hi)); --c2: var(--night-lo, var(--card-lo)); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .card { --c1: var(--night-hi, var(--card-hi)); --c2: var(--night-lo, var(--card-lo)); }
+}
+
+.card.nofit input:checked + .face { color: var(--fg); background: var(--map) center / 220px 260px, radial-gradient(120% 110% at 85% 100%, var(--card-lo) 0%, var(--card-hi) 70%); box-shadow: inset 0 0 0 5px var(--surface), inset 0 0 0 7px var(--mango), 0 6px 0 var(--cat-dark); animation: wobble .9s var(--soft) both; }
+.card.nofit input:checked + .face::after { animation: none; }
+@keyframes wobble { 0% { transform: rotate(0); } 25% { transform: rotate(-2deg) scale(.98); } 55% { transform: rotate(1.5deg); } 100% { transform: none; } }
+.card.nofit input:checked + .face .art svg { stroke: var(--muted); transform: none; }
+.card.nofit input:checked + .face .art::before { opacity: .25; }
+.card.nofit .title { text-decoration: line-through; text-decoration-color: var(--mango); }
+.card.nofit .nofit-msg { display: block; }
+.card.nofit .desc { display: none; }

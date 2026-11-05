@@ -1,0 +1,36 @@
+/* Layout: one phone-first column; each step is a fieldset of card-radios fanned like a hand; cat above the cards reacts to the pick. */
+:root {
+  --bg: #f6e4cf;            /* warm sand */
+  --surface: #fff3e3;
+  --surface-2: #f3d7b8;
+  --fg: #3d2415;            /* warm brown ink */
+  --muted: #8c6a50;
+  --line: #e6c6a3;
+  --accent: #ff6a45;
+  --accent-ink: #fff8ef;
+  --mango: #f2b531;
+  --glow-a: #ffb27a;
+  --glow-b: #f7c9a6;
+  --card-hi: #fff4e4;
+  --card-lo: #f5d6b3;
+  --cat: #f3a53c; --cat-dark: #8f4f16; --cat-pink: #ff9a8a; --cat-eye: #2a1a12; --cat-belly: #fff3d6;
+  --display: "Unbounded", "Arial Black", sans-serif;
+  --body: "Manrope", "Helvetica Neue", Arial, sans-serif;
+  --r-card: 30px 22px 30px 22px;
+  --soft: cubic-bezier(.34, 1.25, .64, 1);     /* gentle overshoot */
+  --ease: cubic-bezier(.25, .8, .3, 1);        /* smooth settle */
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #231510; --surface: #332118; --surface-2: #432c20; --fg: #f8e9d8;
+    --muted: #c2a089; --line: #54392a; --accent: #ff7a57; --accent-ink: #2a140a; --mango: #f6c04a;
+    --glow-a: #6b2f1c; --glow-b: #4a2a1a; --card-hi: #3f2a1e; --card-lo: #2a1911; --cat-belly: #f6e3c0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #231510; --surface: #332118; --surface-2: #432c20; --fg: #f8e9d8;
+  --muted: #c2a089; --line: #54392a; --accent: #ff7a57; --accent-ink: #2a140a; --mango: #f6c04a;
+  --glow-a: #6b2f1c; --glow-b: #4a2a1a; --card-hi: #3f2a1e; --card-lo: #2a1911; --cat-belly: #f6e3c0;
+  color-scheme: dark;
+}

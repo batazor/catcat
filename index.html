@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6e4cf" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#231510" media="(prefers-color-scheme: dark)">
+  <title>Идеальная суббота</title>
+  <meta name="description" content="Собери субботу в Чангу: выбери окно времени и карточки, кот скажет, что влезает.">
+  <link rel="icon" href="src/svg/cat.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Unbounded:wght@500;700&family=Manrope:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="src/styles/tokens.css">
+  <link rel="stylesheet" href="src/styles/base.css?v=11">
+  <link rel="stylesheet" href="src/styles/cards.css?v=16">
+  <link rel="stylesheet" href="src/styles/slider.css?v=5">
+  <link rel="stylesheet" href="src/styles/buttons.css?v=3">
+  <link rel="stylesheet" href="src/styles/summary.css?v=4">
+  <link rel="stylesheet" href="src/styles/mood.css?v=3">
+  <link rel="stylesheet" href="src/styles/cat.css?v=11">
+  <link rel="stylesheet" href="src/styles/paw.css">
+  <link rel="stylesheet" href="src/styles/intro.css?v=5">
+</head>
+<body>
+<div class="backdrop" aria-hidden="true"></div>
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro-title">Чангу, суббота<small>выбирай, как её провести</small></div>
+</div>
+<div class="paw" id="paw" aria-hidden="true"></div>
+<main>
+  <!-- Step: time window (static; the rest are generated from STEPS) -->
+  <section class="step" id="step-time" aria-labelledby="h-time">
+    <div class="step-heading">
+      <h1 id="h-time">Когда ты свободна?</h1>
+      <div class="cat" data-mood="asleep" data-cat></div>
+    </div>
+    <fieldset aria-labelledby="h-time">
+      <div class="range">
+        <p class="readout">
+          <output id="r-from" for="from">14:00</output><span class="arrow" aria-hidden="true">→</span><output id="r-to" for="to">18:00</output>
+          <output class="dur" id="r-dur" for="from to">4 ч</output>
+        </p>
+        <div class="slider" id="slider">
+          <div class="track" aria-hidden="true"><div class="fill" id="r-fill"></div></div>
+          <input type="range" id="from" name="from" min="8" max="23" step="0.5" value="14" aria-label="Начало">
+          <input type="range" id="to" name="to" min="8" max="23" step="0.5" value="18" aria-label="Конец">
+        </div>
+        <ol class="ticks" aria-hidden="true"><li style="--p:0">8:00</li><li style="--p:.2667">12:00</li><li style="--p:.5333">16:00</li><li style="--p:.8">20:00</li><li style="--p:1">23:00</li></ol>
+      </div>
+    </fieldset>
+    <p class="hint" id="r-hint" role="status" hidden></p>
+    <nav class="nav"><button type="button" class="btn" id="time-next">Дальше</button></nav>
+  </section>
+
+  <div id="steps"></div>
+
+  <section class="step" id="step-summary" aria-labelledby="h-summary" hidden>
+    <div class="step-heading">
+      <h1 id="h-summary">Лучшая суббота</h1>
+      <div class="cat" data-cat></div>
+    </div>
+    <ol class="plan" id="plan"></ol>
+    <p class="note">Отправь план. Брони и точки на карте дальше за мной.</p>
+    <label class="mood-consent" for="mood-accept">
+      <input type="checkbox" id="mood-accept">
+      <span>Согласна с <a href="src/mood-offer.html" id="mood-offer-link" aria-haspopup="dialog">офертой на хорошее настроение</a></span>
+    </label>
+    <p class="mood-status" id="mood-status" role="status"></p>
+    <p class="toast" id="toast" role="status"></p>
+    <nav class="nav"><button type="button" class="btn ghost" id="restart">Передумала</button><button type="button" class="btn accent" id="submit-plan" disabled>Отправить план</button></nav>
+  </section>
+</main>
+
+<dialog class="mood-dialog" id="mood-offer-dialog" aria-labelledby="mood-offer-title">
+  <div id="mood-offer-content"></div>
+  <div class="mood-dialog-actions">
+    <button type="button" class="btn ghost" id="mood-offer-close">Закрыть</button>
+    <button type="button" class="btn" id="mood-offer-agree">Согласна</button>
+  </div>
+</dialog>
+
+<template id="tpl-step">
+  <section class="step" hidden>
+    <div class="step-heading">
+      <h1></h1>
+      <div class="cat" data-cat></div>
+    </div>
+    <p class="step-empty" hidden>В этот день можно успеть много всего, но наше время сегодня не способно вместить всё. Так что оставим на другой раз.</p>
+    <fieldset>
+      <div class="pair"></div>
+    </fieldset>
+
+    <nav class="nav"><button type="button" class="btn ghost" data-back>Назад</button><button type="button" class="btn" data-next disabled>Дальше</button></nav>
+  </section>
+</template>
+
+<template id="tpl-card">
+  <label class="card">
+    <input type="radio">
+    <span class="face">
+      <span class="stamp yes" aria-hidden="true">ДА</span><span class="stamp no" aria-hidden="true">НЕТ</span>
+      <span class="art"><svg viewBox="0 0 64 64" aria-hidden="true"></svg></span>
+      <span class="copy"><span class="title"></span><span class="scratch"><span class="desc"></span><canvas class="foil" aria-hidden="true"></canvas></span><span class="nofit-msg"></span></span>
+    </span>
+  </label>
+</template>
+
+<script type="module" src="src/js/main.js?v=45"></script>
+</body>
+</html>

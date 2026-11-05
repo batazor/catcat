@@ -1,0 +1,42 @@
+/* A playful agreement at the end of the plan. */
+.mood-consent { display: flex; align-items: flex-start; gap: 10px; padding-block: 6px; min-height: 44px; font-size: 13px; line-height: 1.55; color: var(--muted); cursor: pointer; }
+.mood-consent input { appearance: none; flex: 0 0 22px; width: 22px; height: 22px; margin: 0; display: grid; place-items: center; background: var(--surface); border: 2px solid var(--cat-dark); border-radius: 6px; box-shadow: 0 2px 0 var(--cat-dark); cursor: pointer; }
+.mood-consent input:checked { background: var(--mango); }
+.mood-consent input:checked::after { content: '✓'; font: 700 17px/1 var(--body); color: var(--cat-dark); }
+.mood-consent a { color: var(--cat-dark); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+.mood-consent a:hover { color: var(--accent); }
+.mood-consent input:focus-visible, .mood-consent a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.mood-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.mood-dialog { width: min(480px, calc(100% - 32px)); max-height: calc(100dvh - 48px); margin: auto; padding: 24px; overflow-y: auto; color: var(--fg); background: var(--surface); border: 2.5px solid var(--cat-dark); border-radius: 22px; box-shadow: 0 7px 0 var(--cat-dark); }
+.mood-dialog::backdrop { background: rgba(61, 36, 21, .35); }
+.mood-dialog-actions { display: flex; gap: 10px; margin-top: 24px; }
+.mood-dialog-actions .btn { font-size: 25px; }
+.mood-document { font: 14px/1.65 var(--body); }
+.mood-document h2 { margin: 0 0 20px; font: 700 clamp(21px, 5vw, 27px)/1.25 var(--display); color: var(--cat-dark); text-wrap: balance; }
+.mood-document p { margin: 0 0 16px; }
+.mood-document ol { padding-left: 22px; margin: 0 0 20px; }
+.mood-document li { padding-left: 4px; margin-block: 12px; }
+.mood-document li::marker { color: var(--cat-dark); font-weight: 700; }
+.mood-document .mood-document-footer { margin-bottom: 0; color: var(--muted); font-size: 12px; }
+.mood-document-page { box-sizing: border-box; min-height: 100vh; margin: 0; padding: 32px 16px; background: var(--bg); color: var(--fg); }
+.mood-document-page .mood-document { max-width: 480px; margin: auto; padding: 28px; background: var(--surface); border: 2.5px solid var(--cat-dark); border-radius: 22px; box-shadow: 0 6px 0 var(--cat-dark); }
+
+/* The message is held in view briefly before the airship continues its flight. */
+.mood-flight { position: fixed; inset: 0; overflow: hidden; z-index: 40; pointer-events: none; }
+.mood-airship { position: absolute; top: clamp(44px, 13vh, 140px); left: 0; width: min(340px, calc(100vw - 32px)); animation: moodCruise 10s cubic-bezier(.4, 0, .3, 1) both; }
+.mood-rig { animation: moodBob 3.4s ease-in-out infinite; }
+.mood-rig > svg { display: block; width: 100%; height: auto; }
+.mood-message { position: relative; margin: 0 20px; padding: 14px 16px; border: 2px solid var(--cat-dark); border-radius: 14px; background: var(--surface); color: var(--cat-dark); box-shadow: 0 4px 0 var(--cat-dark); text-align: center; }
+.mood-message strong { display: block; font: 700 16px/1.35 var(--display); }
+.mood-message p { margin: 8px 0 0; font: 13px/1.45 var(--body); }
+@keyframes moodCruise {
+  0% { transform: translateX(calc(-100% - 32px)); }
+  24%,72% { transform: translateX(calc(50vw - 50%)); }
+  100% { transform: translateX(calc(100vw + 32px)); }
+}
+@keyframes moodBob { 0%,100% { transform: translateY(0) rotate(-.6deg); } 50% { transform: translateY(-5px) rotate(.6deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .mood-flight { display: none; }
+  .mood-status:not(:empty) { position: static; width: auto; height: auto; margin: 0; overflow: visible; clip-path: none; white-space: normal; font-size: 13px; color: var(--cat-dark); }
+}

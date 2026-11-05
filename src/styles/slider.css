@@ -1,0 +1,23 @@
+/* ---------- range ---------- */
+.range { --thumb: 36px; position: relative; padding: 4px 0 0; }
+.readout { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 0 0 14px; }
+.readout output { background: var(--surface); border: 2px solid var(--cat-dark); border-radius: 16px; padding: 3px 12px; box-shadow: 0 4px 0 var(--cat-dark); color: var(--cat-dark); }
+.readout .arrow { color: var(--accent); font-size: 22px; }
+.readout .dur { margin-left: auto; font: 700 13px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--cat-dark); background: var(--mango); border: 2px solid var(--cat-dark); border-radius: 999px; padding: 6px 12px; box-shadow: 0 4px 0 var(--cat-dark); }
+.slider { position: relative; height: 48px; }
+.track { position: absolute; left: 0; right: 0; top: 50%; height: 16px; transform: translateY(-50%); border-radius: 999px; background: var(--surface); border: 2px solid var(--cat-dark); box-shadow: inset 0 2px 0 rgba(61,36,21,.12); }
+.fill { position: absolute; top: 0; bottom: 0; left: calc(var(--thumb) / 2 - 2px + (100% - var(--thumb)) * var(--lf, .4)); right: calc(var(--thumb) / 2 - 2px + (100% - var(--thumb)) * var(--rf, .33)); border-radius: 999px; background: var(--accent); transition: left .12s linear, right .12s linear; }
+.slider input[type="range"] { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; appearance: none; -webkit-appearance: none; background: none; pointer-events: none; }
+.slider input[type="range"]::-webkit-slider-runnable-track { height: 100%; background: transparent; }
+.slider input[type="range"]::-moz-range-track { height: 100%; background: transparent; }
+.slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; pointer-events: auto; width: var(--thumb); height: var(--thumb); margin-top: calc((48px - var(--thumb)) / 2); border-radius: 50%; border: 2.5px solid var(--cat-dark); background: radial-gradient(circle at 35% 30%, #ffd27a, var(--mango) 65%); box-shadow: 0 3px 0 var(--cat-dark), inset 0 2px 0 rgba(255,255,255,.5); cursor: grab; transition: transform .3s var(--soft); }
+.slider input[type="range"]::-moz-range-thumb { pointer-events: auto; width: calc(var(--thumb) - 8px); height: calc(var(--thumb) - 8px); border-radius: 50%; border: 2.5px solid var(--cat-dark); background: radial-gradient(circle at 35% 30%, #ffd27a, var(--mango) 65%); box-shadow: 0 3px 0 var(--cat-dark); cursor: grab; }
+.slider input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.12); cursor: grabbing; }
+.slider input[type="range"]:focus-visible { outline: none; }
+.slider input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 3px solid var(--mango); outline-offset: 2px; }
+.ticks { position: relative; height: 18px; margin: 4px 0 0; padding: 0; list-style: none; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+.ticks li { position: absolute; top: 0; left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--p)); transform: translateX(-50%); }
+.ticks li::before { content: ""; display: block; width: 2px; height: 5px; margin: 0 auto 2px; border-radius: 1px; background: var(--line); }
+@media (max-width: 380px) { .readout { font-size: 24px; } .card .face { height: 240px; } .card .title { font-size: 16px; } .pair { height: 272px; } }
+.hint { margin: 0; font-weight: 700; color: var(--mango); font-size: 14px; line-height: 1.3; }
+.hint[data-level="stop"] { color: var(--accent); }
