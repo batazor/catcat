@@ -1,8 +1,8 @@
 /* ---------- intro: camera descends from the sky to the sand ---------- */
-.intro { --water-cycle: 2.4s; position: fixed; inset: 0; z-index: 30; background: #5b7fd8; overflow: hidden; }
-.intro svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.intro .world { animation: zoom 5.4s cubic-bezier(.5, 0, .3, 1) .3s both; transform-origin: 195px 422px; will-change: transform; }
-.intro .layer { animation: descend 4.8s cubic-bezier(.55, 0, .3, 1) .3s both; will-change: transform; }
+.intro { --water-cycle: 2.4s; --scene-width: 560px; position: fixed; inset: 0; z-index: 30; background: var(--bg); overflow: hidden; }
+.intro > svg { position: absolute; inset: 0; width: min(100%, var(--scene-width)); height: 100%; margin-inline: auto; }
+.intro .world { animation: zoom 5.4s cubic-bezier(.5, 0, .3, 1) .3s both; transform-origin: 195px 422px; }
+.intro .layer { animation: descend 4.8s cubic-bezier(.55, 0, .3, 1) .3s both; }
 .intro .star { animation: twinkle 2.6s ease-in-out infinite alternate; }
 .intro .star:nth-child(2n) { animation-delay: -1.2s; } .intro .star:nth-child(3n) { animation-delay: -.6s; }
 .intro .glow { animation: pulse 3s ease-in-out infinite alternate; transform-origin: 300px 760px; }
@@ -31,7 +31,7 @@
 .intro .cat .eye-open { opacity: 0; } .intro .cat .acc, .intro .cat .tear { display: none; }
 .intro .cat .eye-closed { opacity: 1; } .intro .cat .zzz { display: block; }
 .intro .cat .zzz { animation: zz 2.2s ease-in-out infinite; }
-.intro .intro-title { position: absolute; left: 0; right: 0; top: 44%; text-align: center; font-family: var(--display); font-weight: 700; font-size: 32px; line-height: 1.1; color: #fff8ef; -webkit-text-stroke: 1.5px #8f4f16; paint-order: stroke fill; text-shadow: 0 4px 0 #8f4f16, 0 10px 24px rgba(61,36,21,.25); opacity: 0; animation: titleIn 2.4s var(--ease) 1.5s both; padding: 0 24px; letter-spacing: -.01em; }
+.intro .intro-title { position: absolute; left: 0; right: 0; top: 44%; max-width: var(--scene-width); margin-inline: auto; text-align: center; font-family: var(--display); font-weight: 700; font-size: 32px; line-height: 1.1; color: #fff8ef; -webkit-text-stroke: 1.5px #8f4f16; paint-order: stroke fill; text-shadow: 0 4px 0 #8f4f16, 0 10px 24px rgba(61,36,21,.25); opacity: 0; animation: titleIn 2.4s var(--ease) 1.5s both; padding: 0 24px; letter-spacing: -.01em; }
 .intro .intro-title small { display: block; font: 500 26px/1.2 'Caveat', cursive; letter-spacing: 0; margin-top: 8px; color: #fff3d6; -webkit-text-stroke: 0; text-shadow: 0 2px 3px rgba(61,36,21,.4); }
 .intro.out { animation: introOut 1.1s var(--ease) both; pointer-events: none; }
 .intro.out svg { animation: throughOut 1.1s var(--ease) both; }
