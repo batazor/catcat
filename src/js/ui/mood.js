@@ -1,6 +1,6 @@
 import { $, loadSvg, reducedMotion } from './dom.js';
 
-const MESSAGE = 'Хорошему настроению быть!';
+const MESSAGE = 'Договорились ♥';
 const WISH = 'Можно смеяться, менять планы и просто быть собой.';
 
 export function wireMood() {

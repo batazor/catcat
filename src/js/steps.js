@@ -24,7 +24,7 @@ export function makeSteps(api) {
     {
       id: 'short', cost: 2, hours: '~2 ч',
       when: s => budget(s) < 3,
-      title: s => (evening(s) ? 'Два часа. Настолки или руфтоп?' : 'Два часа. Во что?'),
+      title: s => (evening(s) ? 'Настолки или руфтоп?' : 'Во что сыграем?'),
       options: [
         { id: 'boardgames', label: 'Настолки', desc: 'Тест на любовь к настолкам', icon: 'dice', acc: 'dice', sub: 'Начало' },
         { id: 'billiards', label: 'Бильярд', desc: 'Мастерство или удача?', icon: 'ball', acc: 'ball', sub: 'Начало', when: s => !evening(s) },
@@ -70,7 +70,7 @@ export function makeSteps(api) {
     {
       id: 'sunset', cost: 2, hours: '~2 ч', fixedAt: SUNSET_SLOT, branch: 'canggu',
       when: s => s.where !== 'bukit' && budget(s) >= 3,
-      title: s => (s.nature ? 'Закат. Где?' : 'Остаётся закат. Где?'),
+      title: () => 'Где встретим закат?',
       check: sunsetCheck,
       options: [
         { id: 'beach', label: 'Закат на пляже', desc: 'Босиком по песку, пока солнце уходит в океан', icon: 'beach', acc: 'shades', sub: `Закат в ${SUNSET_AT}, после ужин` },

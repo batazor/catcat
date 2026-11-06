@@ -3,7 +3,7 @@
 
 import { SUNSET, SUNSET_AT, SUNSET_SLOT } from './facts.js';
 import { clock, fmtDur } from './time.js';
-import { makeSteps } from './steps.js?v=8';
+import { makeSteps } from './steps.js?v=9';
 
 export function createSchedule(initial = { from: 14, to: 18 }) {
   const state = { from: initial.from, to: initial.to };

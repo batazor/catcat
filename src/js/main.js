@@ -1,4 +1,4 @@
-import { createSchedule } from './schedule.js?v=10';
+import { createSchedule } from './schedule.js?v=11';
 import { MSG } from './facts.js';
 import { clock, fmtDur } from './time.js';
 import { $, loadSvg } from './ui/dom.js?v=3';
@@ -10,7 +10,7 @@ import { readDraft, saveDraft } from './draft.js';
 import { bubbles, parallax } from './ui/effects.js';
 import { runIntro } from './ui/intro.js?v=5';
 import { renderPlan, wireSubmit } from './ui/summary.js?v=8';
-import { wireMood } from './ui/mood.js?v=4';
+import { wireMood } from './ui/mood.js?v=5';
 
 const BASE = import.meta.url ? new URL('../', import.meta.url) : null;   // src/ (empty inside the single-file build)
 // SVG assets come from src/svg/*.svg; the single-file build inlines them into window.__ASSETS instead
@@ -199,14 +199,17 @@ async function boot() {
     fill.style.setProperty('--rf', 1 - (b - min) / (max - min));
     confirmStage = 0; timeNext.textContent = 'Дальше';
     let mood = touched ? 'awake' : 'asleep';
-    if (b - a < 2) { hint.hidden = false; hint.dataset.level = 'stop'; hint.textContent = 'Так не играем. За два часа ничего не успеем.'; timeNext.disabled = true; mood = 'sad'; }
+    if (b - a < 2) { hint.hidden = false; hint.dataset.level = 'stop'; hint.textContent = 'Так не играем. Давай хотя бы два часа?'; timeNext.disabled = true; mood = 'sad'; }
     else if (b - a < 4) { hint.hidden = true; hint.textContent = ''; timeNext.disabled = false; mood = 'wistful'; }
     else { hint.hidden = true; timeNext.disabled = false; }
     setCat(sections.time, null, mood, false);
     if (editing === 'time' && !timeNext.disabled) timeNext.textContent = 'Сохранить';
     persist();
   }
-  for (const el of [fromEl, toEl]) el.addEventListener('input', () => { touched = true; syncRange(el); });
+  for (const el of [fromEl, toEl]) {
+    el.addEventListener('input', () => { touched = true; syncRange(el); hint.hidden = true; });
+    el.addEventListener('change', () => syncRange(el));
+  }
   timeNext.addEventListener('click', () => {
     if (editing === 'time') {
       pawTap(timeNext, () => {
@@ -275,10 +278,13 @@ boot().catch(err => {
   main.replaceChildren();
   const p = document.createElement('p');
   p.className = 'hint'; p.dataset.level = 'stop';
-  p.textContent = 'Не загрузились части страницы. Обнови, пожалуйста.';
+  p.textContent = 'Страница не загрузилась. Попробуем ещё раз?';
   const retry = document.createElement('button');
   retry.type = 'button'; retry.className = 'btn'; retry.textContent = 'Попробовать ещё раз';
   retry.addEventListener('click', () => location.reload());
   const box = document.createElement('section'); box.className = 'step load-error';
-  box.append(p, retry); main.append(box);
+  const fallback = document.createElement('p');
+  fallback.className = 'note';
+  fallback.textContent = 'Если и во второй раз не загрузится, у нас нет выбора, кроме как вернуться в чат.';
+  box.append(p, fallback, retry); main.append(box);
 });
