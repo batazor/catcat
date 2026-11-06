@@ -258,7 +258,8 @@ async function boot() {
     editing = ['time', ...sched.route].includes(draft.editing) ? draft.editing : null;
   }
   parallax();
-  if (sceneSvg && !draft) runIntro(sceneSvg);
+  // The welcome scene is part of every visit, including a saved draft.
+  if (sceneSvg) runIntro(sceneSvg);
   else $('#intro').hidden = true;
   syncRange();
   let resume = draft && sched.order().includes(draft.current) && sched.budget() >= 2 ? draft.current : 'time';
