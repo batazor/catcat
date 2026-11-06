@@ -10,7 +10,7 @@ import { readDraft, saveDraft } from './draft.js';
 import { bubbles, parallax } from './ui/effects.js';
 import { runIntro } from './ui/intro.js?v=5';
 import { renderPlan, wireSubmit } from './ui/summary.js?v=8';
-import { wireMood } from './ui/mood.js?v=5';
+import { wireMood } from './ui/mood.js?v=6';
 
 const BASE = import.meta.url ? new URL('../', import.meta.url) : null;   // src/ (empty inside the single-file build)
 // SVG assets come from src/svg/*.svg; the single-file build inlines them into window.__ASSETS instead
