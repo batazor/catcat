@@ -3,12 +3,13 @@ import { MSG } from './facts.js';
 import { clock, fmtDur } from './time.js';
 import { $, loadSvg } from './ui/dom.js?v=3';
 import { setCatSvg, mountCat, setCat, catOffer, clearOffer } from './ui/cat.js?v=5';
-import { buildStep, applyOptionWhen, fan, markPick, resetCards, paintFoils } from './ui/cards.js?v=20';
+import { buildStep, applyOptionWhen, fan, markPick, resetCards, paintFoils } from './ui/cards.js?v=23';
 import { pawTap, isPawBusy } from './ui/paw.js?v=2';
+import { dealCards, leaveDeck, parcel, moveBetweenPlanAndCard } from './ui/motion.js?v=3';
 import { readDraft, saveDraft } from './draft.js';
 import { bubbles, parallax } from './ui/effects.js';
 import { runIntro } from './ui/intro.js?v=5';
-import { renderPlan, wireSubmit } from './ui/summary.js?v=7';
+import { renderPlan, wireSubmit } from './ui/summary.js?v=8';
 import { wireMood } from './ui/mood.js?v=4';
 
 const BASE = import.meta.url ? new URL('../', import.meta.url) : null;   // src/ (empty inside the single-file build)
@@ -52,7 +53,10 @@ async function boot() {
 
   // ---------- generated steps ----------
   for (const step of sched.steps) {
-    sections[step.id] = buildStep(step, $('#steps'), pick, btn => pawTap(btn, () => go(+1)), () => go(-1));
+    sections[step.id] = buildStep(step, $('#steps'), pick, btn => {
+      const stop = editing ? () => {} : leaveDeck($('.pair', sections[cur]));
+      pawTap(btn, () => { stop(); go(+1); });
+    }, () => go(-1));
     mountCat($('[data-cat]', sections[step.id]));
   }
 
@@ -102,13 +106,15 @@ async function boot() {
       clearPick(sched.byId(next));
     }
   }
-  function show(id) {
+  function show(id, animate = true) {
     cur = id;
     document.querySelectorAll('.btn.taken').forEach(b => b.classList.remove('taken'));
+    sections[id].classList.toggle('motion-stage', !animate);
     for (const k in sections) sections[k].hidden = k !== id;
     const step = sched.byId(id);
     if (step) {
       const sec = sections[id];
+      sec.querySelectorAll('.card').forEach(card => card.dispatchEvent(new Event('previewreset')));
       applyOptionWhen(sec, step, sched.optionOn, () => { state[id] = null; $('[data-next]', sec).disabled = true; });
       const empty = !hasChoice(step);
       sec.dataset.exhausted = String(empty);
@@ -128,14 +134,15 @@ async function boot() {
         next.textContent = state[id] && !sched.fits[id] ? 'Пропустить' : sched.isLast(id) ? 'Собрать день' : 'Дальше';
         if (!state[id]) setCat(sec, null, 'awake', false);
         requestAnimationFrame(() => paintFoils(sec));
+        if (animate) dealCards($('.pair', sec));
       }
     }
     if (id === 'summary') {
       editing = null;
-      renderPlan(sched, id => { editing = id; show(id); });
+      renderPlan(sched, editFromPlan);
       refreshSubmission();
       setCat(sections.summary, 'shades', 'awake', true);
-      bubbles();
+      if (animate) bubbles();
     }
     if (editing === id) {
       const next = id === 'time' ? timeNext : $('[data-next]', sections[id]);
@@ -144,6 +151,21 @@ async function boot() {
     } else if (step) $('[data-back]', sections[id]).textContent = 'Назад';
     persist();
     window.scrollTo(0, 0);
+  }
+  async function editFromPlan(id, row) {
+    const from = row.getBoundingClientRect();
+    editing = id;
+    show(id, id === 'time');
+    const card = sections[id].querySelector('.card.chosen');
+    const item = parcel(card);
+    if (item) { item.rect = from; await moveBetweenPlanAndCard(item, card); }
+  }
+  async function returnToPlan() {
+    const id = editing;
+    const item = parcel(sections[cur].querySelector('.card.chosen'));
+    recheckPlan();
+    show('summary', !item);
+    await moveBetweenPlanAndCard(item, document.querySelector(`#plan [data-step="${id}"]`), true);
   }
   function recheckPlan() {
     sched.computeRoute();
@@ -155,7 +177,7 @@ async function boot() {
   function go(dir) {
     if (editing && cur === editing) {
       if (cur === 'where' && dir > 0) { editing = null; }
-      else { recheckPlan(); show('summary'); return; }
+      else { returnToPlan(); return; }
     }
     if (dir > 0 && sections[cur].dataset.exhausted === 'true') {
       show(afterEmpty(cur));

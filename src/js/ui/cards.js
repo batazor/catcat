@@ -1,5 +1,6 @@
 // Cards as a fanned hand: build from <template>, fan layout, swipe-to-pick, touch glow, scratch foil.
 import { $, $$, reducedMotion } from './dom.js';
+import { tuckCard, stopCardMotion } from './motion.js?v=3';
 import { ICON } from '../icons.js?v=9';
 
 // ---------- build ----------
@@ -55,9 +56,12 @@ export function fan(pair) {
   const spread = n === 2 ? 54 : n === 1 ? 0 : 58, tilt = n === 2 ? 7 : n === 1 ? 0 : 9;
   cards.forEach((c, i) => {
     const k = i - (n - 1) / 2;
-    c.style.setProperty('--x', k * spread + 'px');
-    c.style.setProperty('--y', Math.abs(k) * 12 + 'px');
-    c.style.setProperty('--rot', k * tilt + 'deg');
+    const picked = pair.classList.contains('picked'), chosen = c.classList.contains('chosen');
+    const others = cards.filter(card => !card.classList.contains('chosen'));
+    const side = others.length === 1 ? (k <= 0 ? -1 : 1) : others.indexOf(c) * 2 - 1;
+    c.style.setProperty('--x', (picked ? chosen ? 0 : side * 44 : k * spread) + 'px');
+    c.style.setProperty('--y', (picked ? chosen ? -10 : 14 + others.indexOf(c) * 4 : Math.abs(k) * 12) + 'px');
+    c.style.setProperty('--rot', (picked ? chosen ? 0 : side * 4 : k * tilt) + 'deg');
     c.style.setProperty('--z', c.classList.contains('chosen') ? 10 : c.classList.contains('rejected') ? 1 : 2 + (n - Math.abs(k * 2)));
   });
 }
@@ -72,6 +76,8 @@ export function markPick(pair, optId, fits, msg) {
   pair.classList.add('picked');
   let picked = null;
   for (const c of $$('.card', pair)) {
+    stopCardMotion(c);
+    c.dispatchEvent(new Event('previewreset'));
     const mine = c.dataset.opt === optId;
     c.classList.toggle('nofit', mine && !fits);
     c.classList.toggle('chosen', mine);
@@ -86,6 +92,7 @@ export function resetCards(sec) {
   sec.querySelectorAll('input').forEach(i => { i.checked = false; });
   $('.pair', sec).classList.remove('picked');
   sec.querySelectorAll('.card').forEach(c => {
+    stopCardMotion(c);
     c.dispatchEvent(new Event('previewreset'));
     c.classList.remove('nofit', 'chosen', 'rejected');
   });
@@ -158,6 +165,7 @@ function preview(label) {
     motion.onfinish = () => { if (motion && motion.playbackRate < 0) clear(); };
   }
   function activate() {
+    if (label.classList.contains('in-motion')) return;
     const pair = label.parentNode;
     const previous = topCards.get(pair);
     if (previous === label) return;
@@ -194,6 +202,7 @@ function drag(label, onReject) {
   let x0, y0, dx = 0, dy = 0, on = false;
   label.addEventListener('pointerdown', e => {
     if (e.target.classList.contains('foil')) return;   // scratching, not dragging
+    stopCardMotion(label);
     on = true; x0 = e.clientX; y0 = e.clientY; dx = dy = 0;
     raise(label);
     label.setPointerCapture(e.pointerId);
@@ -211,6 +220,7 @@ function drag(label, onReject) {
   function end() {
     if (!on) return;
     on = false;
+    const from = getComputedStyle(label).transform;
     label.classList.remove('dragging');
     for (const [k, v] of [['--dx', '0px'], ['--dy', '0px'], ['--drot', '0deg'], ['--yes', 0], ['--no', 0]]) label.style.setProperty(k, v);
     if (dx > 80) {
@@ -220,6 +230,7 @@ function drag(label, onReject) {
       if (label.querySelector('input').checked) onReject();
       label.classList.add('rejected'); label.classList.remove('chosen');
       fan(label.parentNode);
+      tuckCard(label, from);
     }
   }
   label.addEventListener('pointerup', end);

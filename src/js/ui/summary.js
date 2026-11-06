@@ -12,11 +12,12 @@ export function renderPlan(sched, onEdit) {
     button.type = 'button'; button.className = 'plan-edit';
     button.textContent = 'Изменить';
     button.setAttribute('aria-label', `Изменить: ${name}`);
-    button.addEventListener('click', () => onEdit(id));
+    button.addEventListener('click', () => onEdit(id, button.closest('li')));
     return button;
   }
   for (const [index, r] of sched.rows().entries()) {
     const li = document.createElement('li');
+    li.dataset.step = selected[index].id;
     if (r.destination) {
       li.className = 'destination';
       const title = document.createElement('div'); title.className = 'what'; title.textContent = r.what;
@@ -31,7 +32,7 @@ export function renderPlan(sched, onEdit) {
     const s = document.createElement('div'); s.className = 'sub'; s.textContent = r.sub;
     box.append(w, s, editButton(selected[index].id, r.what)); li.append(t, box); el.appendChild(li);
   }
-  const tot = document.createElement('li'); tot.className = 'total';
+  const tot = document.createElement('li'); tot.className = 'total'; tot.dataset.step = 'time';
   const span = document.createElement('span'); span.textContent = `${clock(sched.state.from)} → ${clock(sched.state.to)}`;
   tot.append(span, editButton('time', 'время')); el.appendChild(tot);
   $('#toast').textContent = '';

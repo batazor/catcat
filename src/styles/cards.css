@@ -7,8 +7,8 @@ legend { padding: 0; margin-bottom: 12px; }
   --dx: 0px; --dy: 0px; --drot: 0deg; --tf: translate(calc(-50% + var(--x, 0px) + var(--dx)), calc(var(--y, 0px) + var(--dy))) rotate(calc(var(--rot, 0deg) + var(--drot)));
   position: absolute; left: 50%; top: 0; width: 206px; max-width: 60%; display: block; z-index: var(--z, 1);
   transform: var(--tf); transform-origin: 50% 110%;
-  transition: transform .6s var(--soft), opacity .4s var(--ease), filter .4s var(--ease);
-  animation: dealIn .9s var(--ease) both; animation-delay: calc(.1s + var(--i, 0) * .16s);
+  transition: transform .48s var(--ease), opacity .4s var(--ease), filter .4s var(--ease);
+  animation: none;
   cursor: grab;
 }
 .card { touch-action: pan-y; }
@@ -64,7 +64,7 @@ legend { padding: 0; margin-bottom: 12px; }
 .card .copy { display: block; min-width: 0; }
 .card input:focus-visible + .face { outline: 3px solid var(--mango); outline-offset: 3px; }
 .card .art { position: relative; width: 74px; height: 74px; display: grid; place-items: center; flex: 0 0 auto; }
-.card .art::before { content: ""; position: absolute; inset: 0; border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%; background: radial-gradient(circle at 35% 30%, var(--surface), var(--badge-color, var(--mango)) 80%); opacity: .7; transition: transform .6s var(--soft), opacity .4s; }
+.card .art::before { content: ""; position: absolute; inset: 0; border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%; background: radial-gradient(circle at 35% 30%, var(--surface), var(--badge-color, var(--mango)) 80%); opacity: .7; transition: transform .48s var(--ease), opacity .4s; }
 .card .art svg { position: relative; width: 58px; height: 58px; stroke: var(--cat-dark); fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .6s var(--soft); }
 /* A tiny idle sway lives inside the SVG, separate from selection and card shuffling. */
 .card .icon-motion {
@@ -138,7 +138,7 @@ legend { padding: 0; margin-bottom: 12px; }
 .card input:checked + .face .art svg { stroke: var(--cat-dark); transform: scale(1.06) rotate(-3deg); }
 .card input:checked + .face .art::before { opacity: .35; transform: scale(1.25); background: radial-gradient(circle at 35% 30%, #fff, rgba(255,255,255,0) 70%); }
 .card input:checked + .face .desc { color: var(--cat-dark); }
-.card input:checked + .face { box-shadow: inset 0 0 0 5px rgba(255,255,255,.35), inset 0 0 0 6.5px var(--cat-dark), 0 6px 0 var(--cat-dark); animation: breathe 3.2s ease-in-out 1.2s infinite; }
+.card input:checked + .face { box-shadow: inset 0 0 0 5px rgba(255,255,255,.35), inset 0 0 0 6.5px var(--cat-dark), 0 6px 0 var(--cat-dark); }
 .card.dragging .face { box-shadow: inset 0 0 0 5px var(--surface), inset 0 0 0 6.5px var(--cat-dark), 0 2px 0 var(--cat-dark); }
 @keyframes breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.008); } }
 /* A card keeps its palette in every hand, regardless of its position. */
@@ -168,3 +168,5 @@ legend { padding: 0; margin-bottom: 12px; }
 .card.nofit .title { text-decoration: line-through; text-decoration-color: var(--mango); }
 .card.nofit .nofit-msg { display: block; }
 .card.nofit .desc { display: none; }
+
+.card.in-motion { pointer-events: none; transition: none; }
