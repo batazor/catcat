@@ -4,9 +4,12 @@ import { $, reducedMotion } from './dom.js';
 
 let busy = false;
 
+export const isPawBusy = () => busy;
+
 export function pawTap(btn, cb) {
   const paw = $('#paw');
-  if (reducedMotion() || busy || !paw) { cb(); return; }
+  if (busy) return;
+  if (reducedMotion() || !paw?.firstElementChild) { cb(); return; }
   busy = true;
   const r = btn.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight;
   const side = ['left', 'right', 'bottom'][Math.floor(Math.random() * 3)];

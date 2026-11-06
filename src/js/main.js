@@ -1,13 +1,14 @@
 import { createSchedule } from './schedule.js?v=10';
 import { MSG } from './facts.js';
 import { clock, fmtDur } from './time.js';
-import { $, loadSvg } from './ui/dom.js';
+import { $, loadSvg } from './ui/dom.js?v=2';
 import { setCatSvg, mountCat, setCat, catOffer, clearOffer } from './ui/cat.js?v=5';
-import { buildStep, applyOptionWhen, fan, markPick, resetCards, paintFoils } from './ui/cards.js?v=19';
-import { pawTap } from './ui/paw.js';
+import { buildStep, applyOptionWhen, fan, markPick, resetCards, paintFoils } from './ui/cards.js?v=20';
+import { pawTap, isPawBusy } from './ui/paw.js?v=2';
+import { readDraft, saveDraft } from './draft.js';
 import { bubbles, parallax } from './ui/effects.js';
 import { runIntro } from './ui/intro.js?v=5';
-import { renderPlan, wireSubmit } from './ui/summary.js?v=6';
+import { renderPlan, wireSubmit } from './ui/summary.js?v=7';
 import { wireMood } from './ui/mood.js?v=4';
 
 const BASE = import.meta.url ? new URL('../', import.meta.url) : null;   // src/ (empty inside the single-file build)
@@ -24,16 +25,27 @@ function loadAsset(name) {
 }
 
 async function boot() {
-  const [catSvg, pawSvg, sceneSvg] = await Promise.all(['cat', 'paw', 'scene'].map(loadAsset));
-  setCatSvg(catSvg);
-  $('#paw').appendChild(pawSvg);
+  const [cat, paw, scene] = await Promise.allSettled(['cat', 'paw', 'scene'].map(loadAsset));
+  if (cat.status !== 'fulfilled') throw cat.reason;
+  setCatSvg(cat.value);
+  if (paw.status === 'fulfilled') $('#paw').appendChild(paw.value);
+  const sceneSvg = scene.status === 'fulfilled' ? scene.value : null;
+  const draft = readDraft();
 
-  const sched = createSchedule({ from: 14, to: 18 });
+  const sched = createSchedule(draft?.state || { from: 14, to: 18 });
   const { state } = sched;
   const sections = { time: $('#step-time'), summary: $('#step-summary') };
   let cur = 'time';
   let confirmStage = 0;
-  let touched = false;
+  let touched = !!draft;
+  let editing = null;
+  const persist = () => saveDraft(state, cur, editing);
+  document.querySelector('main').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.closest('.nav')) e.preventDefault();
+  });
+  document.querySelector('main').addEventListener('click', e => {
+    if (isPawBusy()) { e.preventDefault(); e.stopImmediatePropagation(); }
+  }, true);
 
   // ---------- cats on the static steps ----------
   for (const el of document.querySelectorAll('[data-cat]')) mountCat(el);
@@ -45,6 +57,13 @@ async function boot() {
   }
 
   function pick(step, optId) {
+    if (optId === null) {
+      clearPick(step);
+      $('[data-next]', sections[step.id]).disabled = true;
+      setCat(sections[step.id], null, 'awake', false);
+      persist();
+      return;
+    }
     const fits = sched.pick(step.id, optId);
     const sec = sections[step.id], opt = sched.optOf(step, optId);
     markPick($('.pair', sec), optId, fits, `${MSG}. ${sched.why[step.id]}`);
@@ -54,6 +73,8 @@ async function boot() {
     setCat(sec, fits ? opt.acc : null, fits ? 'awake' : 'sad', true);
     const w = fits ? null : sched.needWindow(step, opt);
     catOffer(sec, w && sched.windowLabel(w), () => extendWindow(step, w));
+    if (editing === step.id) next.textContent = fits ? 'Сохранить' : 'Убрать из плана';
+    persist();
   }
 
   function extendWindow(step, w) {
@@ -110,14 +131,32 @@ async function boot() {
       }
     }
     if (id === 'summary') {
-      renderPlan(sched);
+      editing = null;
+      renderPlan(sched, id => { editing = id; show(id); });
       refreshSubmission();
       setCat(sections.summary, 'shades', 'awake', true);
       bubbles();
     }
+    if (editing === id) {
+      const next = id === 'time' ? timeNext : $('[data-next]', sections[id]);
+      next.textContent = id === 'where' ? 'Дальше' : 'Сохранить';
+      if (id !== 'time') $('[data-back]', sections[id]).textContent = 'К плану';
+    } else if (step) $('[data-back]', sections[id]).textContent = 'Назад';
+    persist();
     window.scrollTo(0, 0);
   }
+  function recheckPlan() {
+    sched.computeRoute();
+    for (const id of sched.route) {
+      const st = sched.byId(id), opt = sched.optOf(st, state[id]);
+      if (opt && (!sched.optionOn(st, opt) || !sched.pick(id, opt.id))) clearPick(st);
+    }
+  }
   function go(dir) {
+    if (editing && cur === editing) {
+      if (cur === 'where' && dir > 0) { editing = null; }
+      else { recheckPlan(); show('summary'); return; }
+    }
     if (dir > 0 && sections[cur].dataset.exhausted === 'true') {
       show(afterEmpty(cur));
       return;
@@ -142,9 +181,19 @@ async function boot() {
     else if (b - a < 4) { hint.hidden = true; hint.textContent = ''; timeNext.disabled = false; mood = 'wistful'; }
     else { hint.hidden = true; timeNext.disabled = false; }
     setCat(sections.time, null, mood, false);
+    if (editing === 'time' && !timeNext.disabled) timeNext.textContent = 'Сохранить';
+    persist();
   }
   for (const el of [fromEl, toEl]) el.addEventListener('input', () => { touched = true; syncRange(el); });
   timeNext.addEventListener('click', () => {
+    if (editing === 'time') {
+      pawTap(timeNext, () => {
+        recheckPlan();
+        editing = null;
+        show(sched.rows().length ? 'summary' : sched.order()[1]);
+      });
+      return;
+    }
     const labels = ['Уверена?', 'Точно-точно?'];
     if (sched.budget() < 4 && confirmStage < labels.length) {
       timeNext.textContent = labels[confirmStage++];
@@ -163,6 +212,7 @@ async function boot() {
   const resetMood = wireMood();
   $('#restart').addEventListener('click', () => {
     resetMood();
+    editing = null;
     sched.reset();
     for (const step of sched.steps) {
       const sec = sections[step.id];
@@ -176,16 +226,35 @@ async function boot() {
     show('time');
   });
 
+  fromEl.value = state.from; toEl.value = state.to;
+  if (draft) {
+    sched.computeRoute();
+    for (const st of sched.steps) {
+      const opt = sched.optOf(st, draft.state[st.id]);
+      if (sched.offered[st.id] && opt && sched.optionOn(st, opt)) pick(st, opt.id);
+    }
+    editing = ['time', ...sched.route].includes(draft.editing) ? draft.editing : null;
+  }
   parallax();
-  runIntro(sceneSvg);
+  if (sceneSvg && !draft) runIntro(sceneSvg);
+  else $('#intro').hidden = true;
   syncRange();
-  show('time');
+  const resume = draft && sched.order().includes(draft.current) && sched.budget() >= 2 ? draft.current : 'time';
+  show(resume);
 }
 
 boot().catch(err => {
   console.error(err.stack || err);
+  $('#intro').hidden = true;
+  const main = document.querySelector('main');
+  main.classList.remove('landing');
+  main.replaceChildren();
   const p = document.createElement('p');
   p.className = 'hint'; p.dataset.level = 'stop';
   p.textContent = 'Не загрузились части страницы. Обнови, пожалуйста.';
-  document.querySelector('main').prepend(p);
+  const retry = document.createElement('button');
+  retry.type = 'button'; retry.className = 'btn'; retry.textContent = 'Попробовать ещё раз';
+  retry.addEventListener('click', () => location.reload());
+  const box = document.createElement('section'); box.className = 'step load-error';
+  box.append(p, retry); main.append(box);
 });

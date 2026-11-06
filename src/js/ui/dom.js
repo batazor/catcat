@@ -14,10 +14,14 @@ export function replay(el, cls) {
 
 // fetch an SVG file and return its <svg> element
 export async function loadSvg(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`${url}: ${res.status}`);
-  const doc = new DOMParser().parseFromString(await res.text(), 'image/svg+xml');
-  const err = doc.querySelector('parsererror');
-  if (err) throw new Error(`${url}: ${err.textContent.split('\n')[0]}`);
-  return document.importNode(doc.documentElement, true);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) throw new Error(`${url}: ${res.status}`);
+    const doc = new DOMParser().parseFromString(await res.text(), 'image/svg+xml');
+    const err = doc.querySelector('parsererror');
+    if (err) throw new Error(`${url}: ${err.textContent.split('\n')[0]}`);
+    return document.importNode(doc.documentElement, true);
+  } finally { clearTimeout(timeout); }
 }

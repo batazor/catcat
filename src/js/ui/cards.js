@@ -19,7 +19,7 @@ export function buildStep(step, host, onPick, onNext, onBack) {
     label.style.setProperty('--i', i);
     glow(label);
     preview(label);
-    drag(label);
+    drag(label, () => onPick(step, null));
     input.name = step.id; input.value = opt.id; input.id = `${step.id}-${opt.id}`;
     $('.art svg', c).innerHTML = `<g class="icon-motion">${ICON[opt.icon]}</g>`;
     $('.title', c).textContent = opt.label;
@@ -75,6 +75,7 @@ export function markPick(pair, optId, fits, msg) {
     const mine = c.dataset.opt === optId;
     c.classList.toggle('nofit', mine && !fits);
     c.classList.toggle('chosen', mine);
+    $('input', c).checked = mine;
     if (mine) { c.classList.remove('rejected'); $('.nofit-msg', c).textContent = msg; picked = c; }
   }
   fan(pair);
@@ -189,7 +190,7 @@ function preview(label) {
 }
 
 // ---------- swipe ----------
-function drag(label) {
+function drag(label, onReject) {
   let x0, y0, dx = 0, dy = 0, on = false;
   label.addEventListener('pointerdown', e => {
     if (e.target.classList.contains('foil')) return;   // scratching, not dragging
@@ -216,12 +217,13 @@ function drag(label) {
       const inp = label.querySelector('input');
       if (!inp.checked) { inp.checked = true; inp.dispatchEvent(new Event('change', { bubbles: true })); }
     } else if (dx < -80) {
+      if (label.querySelector('input').checked) onReject();
       label.classList.add('rejected'); label.classList.remove('chosen');
       fan(label.parentNode);
     }
   }
   label.addEventListener('pointerup', end);
-  label.addEventListener('pointercancel', end);
+  label.addEventListener('pointercancel', () => { dx = dy = 0; end(); });
   label.addEventListener('click', e => { if (Math.abs(dx) > 6 || Math.abs(dy) > 6) { e.preventDefault(); dx = dy = 0; } });
 }
 

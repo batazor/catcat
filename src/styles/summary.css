@@ -18,3 +18,13 @@
 @keyframes rise { 0% { opacity: 0; transform: translateY(0) scale(.6); } 15% { opacity: .85; } 100% { opacity: 0; transform: translateY(-110vh) translateX(var(--sway)) scale(1.1); } }
 .toast[data-state="success"] { color: var(--muted); }
 .toast[data-state="error"] { color: var(--accent); }
+
+/* Small handwritten edit tabs, secondary to the plan itself. */
+.plan-edit { display: inline-flex; align-items: center; gap: 5px; border: 0; border-bottom: 1px dashed var(--line); background: none; padding: 6px 2px; margin-top: 4px; color: var(--cat-dark); font: 700 20px/1.1 'Caveat', cursive; cursor: pointer; transition: color .2s, transform .2s; }
+.plan-edit::before { content: '↺'; font-family: var(--body); font-size: 15px; }
+.plan-edit:hover { color: var(--accent); transform: translateY(-1px); }
+.plan-edit:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.plan-edit:disabled { opacity: .4; cursor: default; }
+.plan li.destination { grid-template-columns: 1fr auto; align-items: center; }
+.plan .total .plan-edit { margin: 0; flex-shrink: 0; }
+.load-error { justify-content: center; flex: 0; margin-block: auto; gap: 24px; }
