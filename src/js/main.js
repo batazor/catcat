@@ -1,7 +1,7 @@
 import { createSchedule } from './schedule.js?v=10';
 import { MSG } from './facts.js';
 import { clock, fmtDur } from './time.js';
-import { $, loadSvg } from './ui/dom.js?v=2';
+import { $, loadSvg } from './ui/dom.js?v=3';
 import { setCatSvg, mountCat, setCat, catOffer, clearOffer } from './ui/cat.js?v=5';
 import { buildStep, applyOptionWhen, fan, markPick, resetCards, paintFoils } from './ui/cards.js?v=20';
 import { pawTap, isPawBusy } from './ui/paw.js?v=2';
@@ -239,7 +239,8 @@ async function boot() {
   if (sceneSvg && !draft) runIntro(sceneSvg);
   else $('#intro').hidden = true;
   syncRange();
-  const resume = draft && sched.order().includes(draft.current) && sched.budget() >= 2 ? draft.current : 'time';
+  let resume = draft && sched.order().includes(draft.current) && sched.budget() >= 2 ? draft.current : 'time';
+  if (resume === 'summary' && !sched.rows().length) resume = sched.order()[1];
   show(resume);
 }
 
